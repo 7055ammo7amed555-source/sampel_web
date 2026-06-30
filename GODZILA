@@ -1,0 +1,77 @@
+import streamlit as st
+
+st.set_page_config(
+    page_title="Task Manager",
+    page_icon="✅",
+    layout="centered"
+)
+
+# إنشاء القوائم لأول مرة
+if "tasks" not in st.session_state:
+    st.session_state.tasks = []
+
+if "completed_tasks" not in st.session_state:
+    st.session_state.completed_tasks = []
+
+st.title("✅ Task Manager")
+
+# إضافة مهمة جديدة
+new_task = st.text_input("Enter a new task:")
+
+if st.button("Add Task"):
+    if new_task.strip():
+        st.session_state.tasks.append(new_task)
+        st.success("Task added successfully!")
+        st.rerun()
+    else:
+        st.warning("Please enter a task!")
+
+st.divider()
+
+# المهام الحالية
+st.subheader("📋 Tasks List")
+
+selected_tasks = []
+
+if st.session_state.tasks:
+
+    for task in st.session_state.tasks:
+        if st.checkbox(task, key=f"task_{task}"):
+            selected_tasks.append(task)
+
+    if st.button("Mark as Complete"):
+        for task in selected_tasks:
+            st.session_state.tasks.remove(task)
+            st.session_state.completed_tasks.append(task)
+
+        st.success("Selected tasks marked as complete!")
+        st.rerun()
+
+else:
+    st.info("No tasks available.")
+
+st.divider()
+
+# المهام المكتملة
+st.subheader("✅ Completed Tasks")
+
+completed_to_delete = []
+
+if st.session_state.completed_tasks:
+
+    for task in st.session_state.completed_tasks:
+        if st.checkbox(
+            f"🗑️ Delete: {task}",
+            key=f"completed_{task}"
+        ):
+            completed_to_delete.append(task)
+
+    if st.button("Delete Selected Completed Tasks"):
+        for task in completed_to_delete:
+            st.session_state.completed_tasks.remove(task)
+
+        st.success("Selected completed tasks deleted!")
+        st.rerun()
+
+else:
+    st.info("No completed tasks yet.")
